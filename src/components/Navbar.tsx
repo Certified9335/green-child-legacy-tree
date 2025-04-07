@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { User, Menu, X } from "lucide-react";
+import { User, Menu, X, Shield, HeartHandshake, MessageSquare } from "lucide-react";
 import NotificationBell from "./notifications/NotificationBell";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This will be replaced with auth state
+  const [isAdmin, setIsAdmin] = useState(true); // This will be replaced with auth state and role check
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -40,6 +41,13 @@ const Navbar = () => {
           <Link to="/resources" className="text-foreground hover:text-eco-green font-medium">
             Resources
           </Link>
+          <Link to="/contact" className="text-foreground hover:text-eco-green font-medium">
+            Contact
+          </Link>
+          <Link to="/donate" className="text-foreground hover:text-eco-green flex items-center font-medium">
+            <HeartHandshake size={16} className="mr-1" />
+            Donate
+          </Link>
           
           {isLoggedIn ? (
             <div className="flex items-center space-x-4">
@@ -49,6 +57,14 @@ const Navbar = () => {
                 </Button>
               </Link>
               <NotificationBell />
+              {isAdmin && (
+                <Link to="/admin">
+                  <Button variant="outline" className="flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
+                    <Shield size={16} />
+                    <span>Admin</span>
+                  </Button>
+                </Link>
+              )}
               <Link to="/profile">
                 <Button variant="outline" className="flex items-center gap-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
                   <User size={16} />
@@ -100,6 +116,14 @@ const Navbar = () => {
             <Link to="/resources" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
               Resources
             </Link>
+            <Link to="/contact" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
+              <MessageSquare size={16} className="inline mr-1" />
+              Contact
+            </Link>
+            <Link to="/donate" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
+              <HeartHandshake size={16} className="inline mr-1" />
+              Donate
+            </Link>
             
             {isLoggedIn ? (
               <>
@@ -113,6 +137,14 @@ const Navbar = () => {
                     Notifications
                   </Button>
                 </Link>
+                {isAdmin && (
+                  <Link to="/admin" onClick={toggleMenu}>
+                    <Button variant="outline" className="w-full justify-start flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
+                      <Shield size={16} />
+                      <span>Admin</span>
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/profile" onClick={toggleMenu}>
                   <Button variant="outline" className="w-full justify-start flex items-center gap-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
                     <User size={16} />
