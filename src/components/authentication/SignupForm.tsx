@@ -6,21 +6,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 const SignupForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const { addNotification } = useNotifications();
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     setIsLoading(true);
     
+    // Get user input for notification
+    const nameInput = e.currentTarget.querySelector('#full-name') as HTMLInputElement;
+    const name = nameInput?.value || 'New user';
+    
     // This would be replaced with actual API call in the real implementation
     try {
       // Simulate API request
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Show success toast
       toast.success('Account created successfully! Please check your email for verification.');
+      
+      // Add notification for the signup event
+      addNotification({
+        type: 'signup',
+        message: `${name} just joined the community!`,
+        user: { name }
+      });
+      
       setIsLoading(false);
     } catch (error) {
       console.error('Error during signup:', error);

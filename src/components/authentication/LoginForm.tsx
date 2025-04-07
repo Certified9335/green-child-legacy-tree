@@ -5,21 +5,38 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const { addNotification } = useNotifications();
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     setIsLoading(true);
     
+    // Get the email input value for notification
+    const emailInput = e.currentTarget.querySelector('#email') as HTMLInputElement;
+    const email = emailInput?.value || '';
+    // Extract name from email for demo purposes
+    const name = email.split('@')[0] || 'User';
+    
     // This would be replaced with actual API call in the real implementation
     try {
       // Simulate API request
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Show success toast
       toast.success('Successfully logged in!');
+      
+      // Add notification for the login event
+      addNotification({
+        type: 'login',
+        message: `${name} has just logged in`,
+        user: { name }
+      });
+      
       setIsLoading(false);
       
       // Redirect to dashboard would happen here

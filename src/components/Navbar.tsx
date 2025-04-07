@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { User, Menu, X } from "lucide-react";
+import NotificationBell from "./notifications/NotificationBell";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,6 +45,7 @@ const Navbar = () => {
                   Dashboard
                 </Button>
               </Link>
+              <NotificationBell />
               <Link to="/profile">
                 <Button variant="outline" className="flex items-center gap-2 border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
                   <User size={16} />
@@ -68,8 +70,9 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <Button variant="ghost" size="sm" onClick={toggleMenu} aria-label="Toggle menu">
+        <div className="md:hidden flex items-center">
+          {isLoggedIn && <NotificationBell />}
+          <Button variant="ghost" size="sm" onClick={toggleMenu} aria-label="Toggle menu" className="ml-2">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
         </div>
@@ -97,6 +100,11 @@ const Navbar = () => {
                 <Link to="/dashboard" onClick={toggleMenu}>
                   <Button variant="ghost" className="w-full justify-start text-foreground hover:text-eco-green">
                     Dashboard
+                  </Button>
+                </Link>
+                <Link to="/notifications" onClick={toggleMenu}>
+                  <Button variant="ghost" className="w-full justify-start text-foreground hover:text-eco-green">
+                    Notifications
                   </Button>
                 </Link>
                 <Link to="/profile" onClick={toggleMenu}>
