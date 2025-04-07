@@ -34,6 +34,9 @@ const Navbar = () => {
           <Link to="/map" className="text-foreground hover:text-eco-green font-medium">
             Tree Map
           </Link>
+          <Link to="/projects" className="text-foreground hover:text-eco-green font-medium">
+            Projects
+          </Link>
           <Link to="/resources" className="text-foreground hover:text-eco-green font-medium">
             Resources
           </Link>
@@ -90,6 +93,9 @@ const Navbar = () => {
             </Link>
             <Link to="/map" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
               Tree Map
+            </Link>
+            <Link to="/projects" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
+              Projects
             </Link>
             <Link to="/resources" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
               Resources
