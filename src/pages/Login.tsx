@@ -11,7 +11,7 @@ const Login = () => {
       
       <main className="flex-1 flex items-center justify-center py-12 bg-muted/30">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 border">
             <LoginForm />
           </div>
         </div>

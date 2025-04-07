@@ -55,6 +55,16 @@ const mockRealtimeEvents = [
     type: 'profile' as NotificationType,
     message: 'Alex Rodriguez updated their profile information.',
     user: { name: 'Alex Rodriguez' }
+  },
+  {
+    type: 'login' as NotificationType,
+    message: 'Sophie Wilson just logged in.',
+    user: { name: 'Sophie Wilson' }
+  },
+  {
+    type: 'comment' as NotificationType,
+    message: 'James Brown commented on your tree update.',
+    user: { name: 'James Brown' }
   }
 ];
 
@@ -95,12 +105,22 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
 
   // Simulate receiving real-time notifications (for demo purposes)
   useEffect(() => {
+    // Initial notification to show the system is active
+    setTimeout(() => {
+      const welcomeEvent = {
+        type: 'profile' as NotificationType,
+        message: 'Welcome to One Tree One Child! Your real-time notifications are active.',
+        user: { name: 'System' }
+      };
+      addNotification(welcomeEvent);
+    }, 3000);
+    
     const intervalId = setInterval(() => {
       if (Math.random() > 0.7) { // 30% chance to receive a notification
         const randomEvent = mockRealtimeEvents[Math.floor(Math.random() * mockRealtimeEvents.length)];
         addNotification(randomEvent);
       }
-    }, 45000); // Check every 45 seconds
+    }, 30000); // Check every 30 seconds for more frequent updates
 
     return () => clearInterval(intervalId);
   }, []);
