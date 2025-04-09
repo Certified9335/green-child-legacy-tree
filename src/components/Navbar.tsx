@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { User, Menu, X, Shield, HeartHandshake, MessageSquare } from "lucide-react";
 import NotificationBell from "./notifications/NotificationBell";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This will be replaced with auth state
-  const [isAdmin, setIsAdmin] = useState(true); // This will be replaced with auth state and role check
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Set to true for testing admin features
+  const [isAdmin, setIsAdmin] = useState(true); // Set to true for testing admin features
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -26,25 +27,23 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-foreground hover:text-eco-green font-medium">
+          <Link to="/" className={`${location.pathname === '/' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green font-medium'}`}>
             Home
           </Link>
-          <Link to="/about" className="text-foreground hover:text-eco-green font-medium">
+          <Link to="/about" className={`${location.pathname === '/about' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green font-medium'}`}>
             About
           </Link>
-          <Link to="/map" className="text-foreground hover:text-eco-green font-medium">
-            Tree Map
-          </Link>
-          <Link to="/projects" className="text-foreground hover:text-eco-green font-medium">
+          <Link to="/projects" className={`${location.pathname === '/projects' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green font-medium'}`}>
             Projects
           </Link>
-          <Link to="/resources" className="text-foreground hover:text-eco-green font-medium">
+          <Link to="/resources" className={`${location.pathname === '/resources' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green font-medium'}`}>
             Resources
           </Link>
-          <Link to="/contact" className="text-foreground hover:text-eco-green font-medium">
+          <Link to="/contact" className={`${location.pathname === '/contact' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green font-medium'}`}>
+            <MessageSquare size={16} className="mr-1 inline" />
             Contact
           </Link>
-          <Link to="/donate" className="text-foreground hover:text-eco-green flex items-center font-medium">
+          <Link to="/donate" className={`${location.pathname === '/donate' ? 'text-eco-green font-medium' : 'text-foreground hover:text-eco-green flex items-center font-medium'}`}>
             <HeartHandshake size={16} className="mr-1" />
             Donate
           </Link>
@@ -52,14 +51,14 @@ const Navbar = () => {
           {isLoggedIn ? (
             <div className="flex items-center space-x-4">
               <Link to="/dashboard">
-                <Button variant="ghost" className="text-foreground hover:text-eco-green">
+                <Button variant="ghost" className={`${location.pathname === '/dashboard' ? 'text-eco-green' : 'text-foreground hover:text-eco-green'}`}>
                   Dashboard
                 </Button>
               </Link>
               <NotificationBell />
               {isAdmin && (
                 <Link to="/admin">
-                  <Button variant="outline" className="flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
+                  <Button variant="outline" className={`flex items-center gap-1 ${location.pathname === '/admin' ? 'bg-amber-50 border-amber-500 text-amber-600' : 'border-amber-500 text-amber-600 hover:bg-amber-50'}`}>
                     <Shield size={16} />
                     <span>Admin</span>
                   </Button>
@@ -106,9 +105,6 @@ const Navbar = () => {
             </Link>
             <Link to="/about" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
               About
-            </Link>
-            <Link to="/map" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
-              Tree Map
             </Link>
             <Link to="/projects" className="text-foreground hover:text-eco-green font-medium" onClick={toggleMenu}>
               Projects
