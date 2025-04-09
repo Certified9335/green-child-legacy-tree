@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/components/layout/AppLayout';
 import TreeStats from '@/components/trees/TreeStats';
 import TreeCard from '@/components/trees/TreeCard';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 // Sample data for demo purposes
 const mockTrees = [
@@ -39,6 +40,28 @@ const mockTrees = [
 ];
 
 const Dashboard = () => {
+  const { logActivity } = useNotifications();
+  
+  const handlePlantTreeClick = () => {
+    // Log the activity when user clicks to plant a new tree
+    logActivity({
+      action: 'Tree Planting Initiated',
+      user: 'Current User',
+      details: 'Started the process of planting a new tree',
+      type: 'tree'
+    });
+  };
+
+  const handleTreeCardClick = (tree: any) => {
+    // Log the activity when user views a tree
+    logActivity({
+      action: 'Tree Details Viewed',
+      user: 'Current User',
+      details: `Viewed details of ${tree.species} tree planted for ${tree.childName}`,
+      type: 'tree'
+    });
+  };
+  
   return (
     <AppLayout>
       <div className="container mx-auto px-6 py-10">
@@ -49,7 +72,10 @@ const Dashboard = () => {
           </div>
           <div className="mt-4 md:mt-0">
             <Link to="/trees/add">
-              <Button className="bg-eco-green hover:bg-eco-green-dark text-white">
+              <Button 
+                className="bg-eco-green hover:bg-eco-green-dark text-white"
+                onClick={handlePlantTreeClick}
+              >
                 Plant a New Tree
               </Button>
             </Link>
@@ -73,7 +99,9 @@ const Dashboard = () => {
             <TabsContent value="my-trees">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {mockTrees.map((tree) => (
-                  <TreeCard key={tree.id} {...tree} />
+                  <div key={tree.id} onClick={() => handleTreeCardClick(tree)}>
+                    <TreeCard {...tree} />
+                  </div>
                 ))}
               </div>
               
@@ -90,7 +118,9 @@ const Dashboard = () => {
             <TabsContent value="needs-attention">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {mockTrees.filter(tree => tree.status === 'needs-attention').map((tree) => (
-                  <TreeCard key={tree.id} {...tree} />
+                  <div key={tree.id} onClick={() => handleTreeCardClick(tree)}>
+                    <TreeCard {...tree} />
+                  </div>
                 ))}
               </div>
               

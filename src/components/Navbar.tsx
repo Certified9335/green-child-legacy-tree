@@ -1,18 +1,31 @@
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { User, Menu, X, Shield, HeartHandshake, MessageSquare } from "lucide-react";
+import { User, Menu, X, Shield, HeartHandshake, MessageSquare, LogOut } from "lucide-react";
 import NotificationBell from "./notifications/NotificationBell";
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Set to true for testing admin features
-  const [isAdmin, setIsAdmin] = useState(true); // Set to true for testing admin features
   const location = useLocation();
+  const { isAdmin, logout } = useAdminAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleAdminLogout = () => {
+    logout();
+    toast({
+      title: "Logged out",
+      description: "You have been logged out of the admin dashboard.",
+    });
+    navigate('/');
   };
 
   return (
@@ -56,9 +69,16 @@ const Navbar = () => {
                 </Button>
               </Link>
               <NotificationBell />
-              {isAdmin && (
+              {isAdmin ? (
                 <Link to="/admin">
                   <Button variant="outline" className={`flex items-center gap-1 ${location.pathname === '/admin' ? 'bg-amber-50 border-amber-500 text-amber-600' : 'border-amber-500 text-amber-600 hover:bg-amber-50'}`}>
+                    <Shield size={16} />
+                    <span>Admin</span>
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/admin-login">
+                  <Button variant="outline" className="flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
                     <Shield size={16} />
                     <span>Admin</span>
                   </Button>
@@ -70,6 +90,15 @@ const Navbar = () => {
                   <span>Profile</span>
                 </Button>
               </Link>
+              {isAdmin && (
+                <Button 
+                  variant="ghost" 
+                  onClick={handleAdminLogout}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut size={16} />
+                </Button>
+              )}
             </div>
           ) : (
             <div className="flex items-center space-x-2">
@@ -133,8 +162,15 @@ const Navbar = () => {
                     Notifications
                   </Button>
                 </Link>
-                {isAdmin && (
+                {isAdmin ? (
                   <Link to="/admin" onClick={toggleMenu}>
+                    <Button variant="outline" className="w-full justify-start flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
+                      <Shield size={16} />
+                      <span>Admin</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/admin-login" onClick={toggleMenu}>
                     <Button variant="outline" className="w-full justify-start flex items-center gap-1 border-amber-500 text-amber-600 hover:bg-amber-50">
                       <Shield size={16} />
                       <span>Admin</span>
@@ -147,6 +183,19 @@ const Navbar = () => {
                     <span>Profile</span>
                   </Button>
                 </Link>
+                {isAdmin && (
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => {
+                      handleAdminLogout();
+                      toggleMenu();
+                    }}
+                    className="w-full justify-start text-red-500 hover:text-red-700"
+                  >
+                    <LogOut size={16} className="mr-2" />
+                    <span>Logout Admin</span>
+                  </Button>
+                )}
               </>
             ) : (
               <>

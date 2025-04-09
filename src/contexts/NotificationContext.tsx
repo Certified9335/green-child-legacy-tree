@@ -2,7 +2,16 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
-export type NotificationType = 'signup' | 'login' | 'tree' | 'profile' | 'comment';
+export type NotificationType = 'signup' | 'login' | 'tree' | 'profile' | 'comment' | 'donation' | 'contact';
+
+export interface Activity {
+  id: string;
+  action: string;
+  user: string;
+  details: string;
+  timestamp: Date;
+  type: string;
+}
 
 export interface Notification {
   id: string;
@@ -18,8 +27,10 @@ export interface Notification {
 
 interface NotificationContextType {
   notifications: Notification[];
+  activities: Activity[];
   unreadCount: number;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  logActivity: (activity: Omit<Activity, 'id' | 'timestamp'>) => void;
   markAllAsRead: () => void;
   markAsRead: (id: string) => void;
   clearNotifications: () => void;
@@ -65,11 +76,22 @@ const mockRealtimeEvents = [
     type: 'comment' as NotificationType,
     message: 'James Brown commented on your tree update.',
     user: { name: 'James Brown' }
+  },
+  {
+    type: 'donation' as NotificationType,
+    message: 'Maria Gonzalez donated $50 to the Urban Forest project.',
+    user: { name: 'Maria Gonzalez' }
+  },
+  {
+    type: 'contact' as NotificationType,
+    message: 'EcoTech Company requested sponsorship information.',
+    user: { name: 'EcoTech Representative' }
   }
 ];
 
 export const NotificationProvider = ({ children }: NotificationProviderProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
@@ -87,6 +109,27 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
       description: `${new Date().toLocaleTimeString()}`,
       position: 'top-right'
     });
+
+    // Also log it as an activity
+    logActivity({
+      action: notification.type.charAt(0).toUpperCase() + notification.type.slice(1),
+      user: notification.user?.name || 'Anonymous User',
+      details: notification.message,
+      type: notification.type
+    });
+  };
+
+  const logActivity = (activity: Omit<Activity, 'id' | 'timestamp'>) => {
+    const newActivity = {
+      ...activity,
+      id: Date.now().toString(),
+      timestamp: new Date()
+    };
+    
+    setActivities(prev => [newActivity, ...prev]);
+    
+    // In a real app, this would be sent to a backend API
+    console.log('Activity logged:', newActivity);
   };
 
   const markAllAsRead = () => {
@@ -129,8 +172,10 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
     <NotificationContext.Provider
       value={{
         notifications,
+        activities,
         unreadCount,
         addNotification,
+        logActivity,
         markAllAsRead,
         markAsRead,
         clearNotifications
