@@ -5,27 +5,35 @@ import { Button } from "@/components/ui/button";
 import { User, Menu, X, Shield, HeartHandshake, MessageSquare, LogOut } from "lucide-react";
 import NotificationBell from "./notifications/NotificationBell";
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Set to true for testing admin features
   const location = useLocation();
-  const { isAdmin, logout } = useAdminAuth();
+  const { isAdmin, logout: adminLogout } = useAdminAuth();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const isLoggedIn = !!user;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const handleAdminLogout = () => {
-    logout();
+    adminLogout();
     toast({
       title: "Logged out",
       description: "You have been logged out of the admin dashboard.",
     });
     navigate('/');
+  };
+
+  const handleUserLogout = async () => {
+    await signOut();
+    toggleMenu();
   };
 
   return (
@@ -90,15 +98,13 @@ const Navbar = () => {
                   <span>Profile</span>
                 </Button>
               </Link>
-              {isAdmin && (
-                <Button 
-                  variant="ghost" 
-                  onClick={handleAdminLogout}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                >
-                  <LogOut size={16} />
-                </Button>
-              )}
+              <Button 
+                variant="ghost" 
+                onClick={signOut}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <LogOut size={16} />
+              </Button>
             </div>
           ) : (
             <div className="flex items-center space-x-2">
@@ -183,6 +189,14 @@ const Navbar = () => {
                     <span>Profile</span>
                   </Button>
                 </Link>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleUserLogout}
+                  className="w-full justify-start text-red-500 hover:text-red-700"
+                >
+                  <LogOut size={16} className="mr-2" />
+                  <span>Logout</span>
+                </Button>
                 {isAdmin && (
                   <Button 
                     variant="ghost" 

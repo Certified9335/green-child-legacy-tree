@@ -5,11 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { Spinner } from '@/components/ui/spinner';
 
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { signIn } = useAuth();
   const { addNotification } = useNotifications();
   const navigate = useNavigate();
   
@@ -18,34 +22,24 @@ const LoginForm = () => {
     
     setIsLoading(true);
     
-    // Get name from email for demo purposes
-    const name = email.split('@')[0] || 'User';
-    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-    
-    // This would be replaced with actual API call in the real implementation
     try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await signIn(email, password);
       
-      // Show success toast
-      toast.success('Successfully logged in!', {
-        description: `Welcome back, ${capitalizedName}!`,
-      });
-      
-      // Add notification for the login event
-      addNotification({
-        type: 'login',
-        message: `${capitalizedName} has just logged in`,
-        user: { name: capitalizedName }
-      });
-      
-      setIsLoading(false);
-      
-      // Redirect to dashboard
-      setTimeout(() => navigate('/dashboard'), 500);
+      if (!error) {
+        // Get name from email for notification
+        const name = email.split('@')[0] || 'User';
+        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+        
+        // Add notification for the login event
+        addNotification({
+          type: 'login',
+          message: `${capitalizedName} has just logged in`,
+          user: { name: capitalizedName }
+        });
+      }
     } catch (error) {
       console.error('Error during login:', error);
-      toast.error('Invalid email or password. Please try again.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -89,6 +83,8 @@ const LoginForm = () => {
               placeholder="Enter your password"
               required
               disabled={isLoading}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           
@@ -99,7 +95,7 @@ const LoginForm = () => {
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
-                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <Spinner size="sm" />
                 Signing in...
               </span>
             ) : "Sign In"}

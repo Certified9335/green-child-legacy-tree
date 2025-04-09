@@ -6,11 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { Spinner } from '@/components/ui/spinner';
 
 const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { signUp } = useAuth();
   const { addNotification } = useNotifications();
   const navigate = useNavigate();
   
@@ -19,33 +24,20 @@ const SignupForm = () => {
     
     setIsLoading(true);
     
-    // Get user input for notification
-    const name = fullName || 'New user';
-    
-    // This would be replaced with actual API call in the real implementation
     try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await signUp(email, password, fullName);
       
-      // Show success toast
-      toast.success('Account created successfully!', {
-        description: 'Please check your email for verification.',
-      });
-      
-      // Add notification for the signup event
-      addNotification({
-        type: 'signup',
-        message: `${name} just joined the community!`,
-        user: { name }
-      });
-      
-      setIsLoading(false);
-      
-      // Redirect to login page
-      setTimeout(() => navigate('/login'), 1000);
+      if (!error) {
+        // Add notification for the signup event
+        addNotification({
+          type: 'signup',
+          message: `${fullName || 'New user'} just joined the community!`,
+          user: { name: fullName || 'New user' }
+        });
+      }
     } catch (error) {
       console.error('Error during signup:', error);
-      toast.error('Failed to create account. Please try again.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -83,6 +75,8 @@ const SignupForm = () => {
               placeholder="you@example.com"
               required
               disabled={isLoading}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           
@@ -94,9 +88,12 @@ const SignupForm = () => {
               placeholder="Create a password"
               required
               disabled={isLoading}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
             />
             <p className="text-sm text-muted-foreground">
-              Must be at least 8 characters
+              Must be at least 6 characters
             </p>
           </div>
           
@@ -121,7 +118,7 @@ const SignupForm = () => {
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
-                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <Spinner size="sm" />
                 Creating Account...
               </span>
             ) : "Create Account"}
