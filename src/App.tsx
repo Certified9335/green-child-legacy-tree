@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import AddTree from "./pages/AddTree";
+import TreeDetail from "./pages/TreeDetail";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import Resources from "./pages/Resources";
@@ -57,6 +58,11 @@ const App = () => {
                       <Route path="/trees/add" element={
                         <ProtectedRoute>
                           <AddTree />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/trees/:id" element={
+                        <ProtectedRoute>
+                          <TreeDetail />
                         </ProtectedRoute>
                       } />
                       <Route path="/profile" element={
