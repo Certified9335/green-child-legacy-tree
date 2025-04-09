@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +13,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
 
+  // Use useEffect to show toast message instead of during render
+  useEffect(() => {
+    if (!isLoading && !user) {
+      toast({
+        variant: "destructive",
+        title: "Access denied",
+        description: "You need to be logged in to access this page.",
+      });
+    }
+  }, [user, isLoading, toast]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -22,12 +33,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
-    toast({
-      variant: "destructive",
-      title: "Access denied",
-      description: "You need to be logged in to access this page.",
-    });
-    
     return <Navigate to="/login" replace />;
   }
 
