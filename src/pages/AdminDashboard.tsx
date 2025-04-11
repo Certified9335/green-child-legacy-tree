@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppLayout from '@/components/layout/AppLayout';
 import { 
   Shield, Users, TreePine, MessageSquare, 
-  HeartHandshake, LineChart, LogOut, User
+  HeartHandshake, LineChart, LogOut, User, UserCog
 } from "lucide-react";
 import ProjectManagement from '@/components/admin/ProjectManagement';
 import UserManagement from '@/components/admin/UserManagement';
@@ -17,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import ActivityLog from '@/components/admin/ActivityLog';
 import { Card } from '@/components/ui/card';
+import AdminRolesTab from '@/components/admin/AdminRolesTab';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -115,7 +115,7 @@ const AdminDashboard = () => {
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-6 mb-8">
+          <TabsList className="grid grid-cols-7 mb-8">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LineChart className="h-4 w-4" />
               <span>Overview</span>
@@ -127,6 +127,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span>Users</span>
+            </TabsTrigger>
+            <TabsTrigger value="roles" className="flex items-center gap-2">
+              <UserCog className="h-4 w-4" />
+              <span>Roles</span>
             </TabsTrigger>
             <TabsTrigger value="contacts" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
@@ -199,6 +203,10 @@ const AdminDashboard = () => {
           
           <TabsContent value="users">
             <UserManagement onAction={handleAction} />
+          </TabsContent>
+          
+          <TabsContent value="roles">
+            <AdminRolesTab onAction={handleAction} />
           </TabsContent>
           
           <TabsContent value="contacts">
