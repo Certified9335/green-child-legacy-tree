@@ -34,6 +34,9 @@ export async function processDonation(donation: Omit<Donation, 'id' | 'status' |
           payment_status: 'pending',
           sponsor_type: 'individual',
           user_id: userId,  // Optional - will be null for anonymous donations
+          // Adding required fields based on schema
+          tree_location: 'To be determined', // Default/placeholder value
+          tree_species: 'To be determined'   // Default/placeholder value
         },
       ])
       .select();

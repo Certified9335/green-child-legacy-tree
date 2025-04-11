@@ -12,7 +12,10 @@ const AddTree = () => {
   const { isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleAddTree = async (formData: FormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
     try {
       const name = formData.get('name') as string;
       const species = formData.get('species') as string;
@@ -21,7 +24,7 @@ const AddTree = () => {
       const childName = formData.get('child_name') as string;
       const description = formData.get('description') as string;
       
-      if (!name || !species || !location || !plantingDate) {
+      if (!name && !childName || !species || !location || !plantingDate) {
         toast.error('Please fill in all required fields');
         return;
       }
@@ -62,7 +65,7 @@ const AddTree = () => {
 
           <div className="bg-white rounded-lg shadow-sm p-6 md:p-8 border">
             <form 
-              action={handleAddTree}
+              onSubmit={handleSubmit}
               className="space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
