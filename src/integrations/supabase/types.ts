@@ -99,6 +99,14 @@ export type Database = {
           image_url: string | null
           title: string
           updated_at: string
+          type: 'article' | 'video' | 'guide'
+          metadata: {
+            readTime?: string
+            duration?: string
+            pages?: number
+            fileUrl?: string
+            videoUrl?: string
+          }
         }
         Insert: {
           category: string
@@ -109,6 +117,14 @@ export type Database = {
           image_url?: string | null
           title: string
           updated_at?: string
+          type: 'article' | 'video' | 'guide'
+          metadata?: {
+            readTime?: string
+            duration?: string
+            pages?: number
+            fileUrl?: string
+            videoUrl?: string
+          }
         }
         Update: {
           category?: string
@@ -119,6 +135,14 @@ export type Database = {
           image_url?: string | null
           title?: string
           updated_at?: string
+          type?: 'article' | 'video' | 'guide'
+          metadata?: {
+            readTime?: string
+            duration?: string
+            pages?: number
+            fileUrl?: string
+            videoUrl?: string
+          }
         }
         Relationships: []
       }
