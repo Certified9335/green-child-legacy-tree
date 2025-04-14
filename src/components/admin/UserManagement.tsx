@@ -6,8 +6,19 @@ import {
   TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Shield } from "lucide-react";
+import { CheckCircle, XCircle, Shield, UserPlus } from "lucide-react";
 import { User } from '@/types/project';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserManagementProps {
   onAction: (action: string, item: string) => void;
@@ -23,6 +34,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
   ]);
   
   const [filter, setFilter] = useState<'all' | 'verified' | 'unverified'>('all');
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
+  const { toast } = useToast();
 
   const filteredUsers = filter === 'all' 
     ? users 
@@ -35,6 +49,11 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
       user.id === id ? { ...user, verified: true } : user
     ));
     onAction('Verified', 'user');
+    
+    toast({
+      title: "User verified",
+      description: "User has been verified successfully",
+    });
   };
 
   const handleReject = (id: string) => {
@@ -42,6 +61,11 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
       user.id === id ? { ...user, verified: false } : user
     ));
     onAction('Rejected', 'user verification');
+    
+    toast({
+      title: "User rejected",
+      description: "User verification has been rejected",
+    });
   };
 
   const handleRoleChange = (id: string, newRole: 'user' | 'admin' | 'superuser') => {
@@ -49,12 +73,54 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
       user.id === id ? { ...user, role: newRole } : user
     ));
     onAction('Updated role for', 'user');
+    
+    toast({
+      title: "Role updated",
+      description: `User role has been updated to ${newRole}`,
+    });
+  };
+
+  const handleAddUser = () => {
+    if (!newUser.name || !newUser.email) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please fill in all required fields",
+      });
+      return;
+    }
+    
+    const newId = (users.length + 1).toString();
+    const userToAdd: User = {
+      id: newId,
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role as 'user' | 'admin' | 'superuser',
+      verified: false,
+      joinedAt: new Date()
+    };
+    
+    setUsers(prev => [userToAdd, ...prev]);
+    setNewUser({ name: '', email: '', role: 'user' });
+    setIsAddUserDialogOpen(false);
+    onAction('Added new', 'user');
+
+    toast({
+      title: "User added",
+      description: "New user has been added successfully",
+    });
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">User Management</h2>
+        <Button 
+          className="bg-eco-green hover:bg-eco-green-dark"
+          onClick={() => setIsAddUserDialogOpen(true)}
+        >
+          <UserPlus className="mr-2 h-4 w-4" /> Add New User
+        </Button>
       </div>
       
       <div className="mb-4">
@@ -155,6 +221,60 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Add User Dialog */}
+      <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>
+              Add a new user to the system.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input 
+                id="name" 
+                value={newUser.name} 
+                onChange={e => setNewUser({...newUser, name: e.target.value})}
+                placeholder="Enter user's full name"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                value={newUser.email} 
+                onChange={e => setNewUser({...newUser, email: e.target.value})}
+                placeholder="Enter user's email address"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <select 
+                id="role"
+                className="w-full p-2 border rounded"
+                value={newUser.role}
+                onChange={e => setNewUser({...newUser, role: e.target.value})}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="superuser">Superuser</option>
+              </select>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddUser} className="bg-eco-green hover:bg-eco-green-dark">Add User</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

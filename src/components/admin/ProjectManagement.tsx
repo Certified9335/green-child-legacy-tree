@@ -6,9 +6,20 @@ import {
   TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, PenLine } from "lucide-react";
+import { CheckCircle, XCircle, PenLine, Plus } from "lucide-react";
 import { Project, ProjectStatus } from '@/types/project';
 import { mockProjects } from '@/data/mockProjects';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectManagementProps {
   onAction: (action: string, item: string) => void;
@@ -17,6 +28,16 @@ interface ProjectManagementProps {
 const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [filter, setFilter] = useState<ProjectStatus | 'all'>('all');
+  const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
+  const [newProject, setNewProject] = useState({
+    title: '',
+    location: '',
+    status: 'upcoming' as ProjectStatus,
+    treesPlanted: 0,
+    treesGoal: 100
+  });
+  
+  const { toast } = useToast();
 
   const filteredProjects = filter === 'all' 
     ? projects 
@@ -36,12 +57,55 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
     onAction('Rejected', 'project');
   };
 
+  const handleAddProject = () => {
+    if (!newProject.title || !newProject.location) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please fill in all required fields",
+      });
+      return;
+    }
+
+    const newId = Date.now().toString();
+    const projectToAdd: Project = {
+      id: newId,
+      title: newProject.title,
+      location: newProject.location,
+      status: newProject.status,
+      treesPlanted: newProject.treesPlanted,
+      treesGoal: newProject.treesGoal,
+      approved: false,
+      description: `New project in ${newProject.location}`,
+      date: new Date().toISOString()
+    };
+
+    setProjects([projectToAdd, ...projects]);
+    setNewProject({
+      title: '',
+      location: '',
+      status: 'upcoming',
+      treesPlanted: 0,
+      treesGoal: 100
+    });
+    setIsAddProjectDialogOpen(false);
+    onAction('Added new', 'project');
+
+    toast({
+      title: "Project added",
+      description: "New project has been added successfully",
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Project Management</h2>
-        <Button className="bg-eco-green hover:bg-eco-green-dark">
-          Add New Project
+        <Button 
+          className="bg-eco-green hover:bg-eco-green-dark"
+          onClick={() => setIsAddProjectDialogOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Add New Project
         </Button>
       </div>
       
@@ -131,6 +195,83 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Add Project Dialog */}
+      <Dialog open={isAddProjectDialogOpen} onOpenChange={setIsAddProjectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Project</DialogTitle>
+            <DialogDescription>
+              Add a new tree planting project to the system.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Project Title</Label>
+              <Input 
+                id="title" 
+                value={newProject.title} 
+                onChange={e => setNewProject({...newProject, title: e.target.value})}
+                placeholder="Enter project title"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input 
+                id="location" 
+                value={newProject.location} 
+                onChange={e => setNewProject({...newProject, location: e.target.value})}
+                placeholder="Enter project location"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <select 
+                id="status"
+                className="w-full p-2 border rounded"
+                value={newProject.status}
+                onChange={e => setNewProject({...newProject, status: e.target.value as ProjectStatus})}
+              >
+                <option value="upcoming">Upcoming</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="requested">Requested</option>
+                <option value="onhand">On Hand</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="treesPlanted">Trees Planted</Label>
+                <Input 
+                  id="treesPlanted" 
+                  type="number"
+                  value={newProject.treesPlanted} 
+                  onChange={e => setNewProject({...newProject, treesPlanted: parseInt(e.target.value) || 0})}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="treesGoal">Trees Goal</Label>
+                <Input 
+                  id="treesGoal" 
+                  type="number"
+                  value={newProject.treesGoal} 
+                  onChange={e => setNewProject({...newProject, treesGoal: parseInt(e.target.value) || 0})}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddProjectDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddProject} className="bg-eco-green hover:bg-eco-green-dark">Add Project</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
