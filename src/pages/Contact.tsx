@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
@@ -41,13 +40,11 @@ const Contact = () => {
       });
       
       if (result) {
-        // Reset form
         setName(profile?.full_name || '');
         setEmail(user?.email || '');
         setPhone('');
         setMessage('');
         
-        // In a real app, redirect to thank you page
         setTimeout(() => {
           navigate('/');
         }, 2000);
@@ -177,9 +174,9 @@ const Contact = () => {
                     <div>
                       <div className="font-medium">Address</div>
                       <div className="text-muted-foreground">
-                        123 Forest Avenue, Suite 100<br />
-                        Green City, EC 98765<br />
-                        United States
+                        45 Ngong Road, Karen<br />
+                        Nairobi, 00200<br />
+                        Kenya
                       </div>
                     </div>
                   </div>
@@ -189,8 +186,8 @@ const Contact = () => {
                     <div>
                       <div className="font-medium">Email</div>
                       <div className="text-muted-foreground">
-                        <a href="mailto:hello@onetreeonechild.org" className="hover:underline hover:text-eco-green">
-                          hello@onetreeonechild.org
+                        <a href="mailto:info@onetreeonechild.org" className="hover:underline hover:text-eco-green">
+                          info@onetreeonechild.org
                         </a>
                       </div>
                     </div>
@@ -201,8 +198,8 @@ const Contact = () => {
                     <div>
                       <div className="font-medium">Phone</div>
                       <div className="text-muted-foreground">
-                        <a href="tel:+11234567890" className="hover:underline hover:text-eco-green">
-                          (123) 456-7890
+                        <a href="tel:+254722123456" className="hover:underline hover:text-eco-green">
+                          +254 722 123 456
                         </a>
                       </div>
                     </div>
@@ -213,8 +210,8 @@ const Contact = () => {
                     <div>
                       <div className="font-medium">Office Hours</div>
                       <div className="text-muted-foreground">
-                        Monday - Friday: 9am - 5pm<br />
-                        Saturday: 10am - 2pm<br />
+                        Monday - Friday: 8am - 5pm<br />
+                        Saturday: 9am - 1pm<br />
                         Sunday: Closed
                       </div>
                     </div>
