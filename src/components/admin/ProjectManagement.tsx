@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -27,13 +26,12 @@ interface ProjectManagementProps {
 
 const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
-  // Fix: Change the type to include 'all' or use a different type
-  const [filter, setFilter] = useState<ProjectStatus | 'all'>('all');
+  const [filter, setFilter] = useState<ProjectStatus>('all');
   const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
   const [newProject, setNewProject] = useState({
     title: '',
     location: '',
-    status: 'upcoming' as ProjectStatus,
+    status: 'upcoming' as Exclude<ProjectStatus, 'all'>,
     treesPlanted: 0,
     treesGoal: 100
   });
@@ -88,21 +86,17 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
       treesGoal: newProject.treesGoal,
       approved: false,
       description: `New project in ${newProject.location}`,
-      date: new Date().toISOString()
     };
 
-    // Save the project to localStorage to persist between refreshes
     const updatedProjects = [projectToAdd, ...projects];
     setProjects(updatedProjects);
     
-    // Store in localStorage
     localStorage.setItem('admin_projects', JSON.stringify(updatedProjects));
     
-    // Reset form
     setNewProject({
       title: '',
       location: '',
-      status: 'upcoming',
+      status: 'upcoming' as Exclude<ProjectStatus, 'all'>,
       treesPlanted: 0,
       treesGoal: 100
     });
@@ -115,7 +109,6 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
     });
   };
   
-  // Load projects from localStorage on mount
   React.useEffect(() => {
     const savedProjects = localStorage.getItem('admin_projects');
     if (savedProjects) {
@@ -226,7 +219,6 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
         </Table>
       </div>
 
-      {/* Add Project Dialog */}
       <Dialog open={isAddProjectDialogOpen} onOpenChange={setIsAddProjectDialogOpen}>
         <DialogContent>
           <DialogHeader>
