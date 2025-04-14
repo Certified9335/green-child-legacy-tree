@@ -46,6 +46,10 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   // For demo purposes, simulate some random activity
   useEffect(() => {
     const activities = [
@@ -77,7 +81,7 @@ const AdminDashboard = () => {
         <AdminHeader currentAdmin={currentAdmin} logout={logout} />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <AdminTabs activeTab={activeTab} />
+          <AdminTabs activeTab={activeTab} onChange={handleTabChange} />
 
           <TabsContent value="overview">
             <DashboardOverview 
