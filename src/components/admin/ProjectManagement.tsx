@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -255,7 +256,7 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
                 id="status"
                 className="w-full p-2 border rounded"
                 value={newProject.status}
-                onChange={e => setNewProject({...newProject, status: e.target.value as ProjectStatus})}
+                onChange={e => setNewProject({...newProject, status: e.target.value as Exclude<ProjectStatus, 'all'>})}
               >
                 <option value="upcoming">Upcoming</option>
                 <option value="ongoing">Ongoing</option>
