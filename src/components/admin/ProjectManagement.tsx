@@ -27,6 +27,7 @@ interface ProjectManagementProps {
 
 const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
+  // Fix: Change the type to include 'all' or use a different type
   const [filter, setFilter] = useState<ProjectStatus | 'all'>('all');
   const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false);
   const [newProject, setNewProject] = useState({
@@ -48,6 +49,11 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
       project.id === id ? { ...project, approved: true } : project
     ));
     onAction('Approved', 'project');
+    
+    toast({
+      title: "Project approved",
+      description: "Project has been approved successfully",
+    });
   };
 
   const handleReject = (id: string) => {
@@ -55,6 +61,11 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
       project.id === id ? { ...project, approved: false } : project
     ));
     onAction('Rejected', 'project');
+    
+    toast({
+      title: "Project rejected",
+      description: "Project has been rejected",
+    });
   };
 
   const handleAddProject = () => {
@@ -80,7 +91,14 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
       date: new Date().toISOString()
     };
 
-    setProjects([projectToAdd, ...projects]);
+    // Save the project to localStorage to persist between refreshes
+    const updatedProjects = [projectToAdd, ...projects];
+    setProjects(updatedProjects);
+    
+    // Store in localStorage
+    localStorage.setItem('admin_projects', JSON.stringify(updatedProjects));
+    
+    // Reset form
     setNewProject({
       title: '',
       location: '',
@@ -96,6 +114,18 @@ const ProjectManagement: React.FC<ProjectManagementProps> = ({ onAction }) => {
       description: "New project has been added successfully",
     });
   };
+  
+  // Load projects from localStorage on mount
+  React.useEffect(() => {
+    const savedProjects = localStorage.getItem('admin_projects');
+    if (savedProjects) {
+      try {
+        setProjects(JSON.parse(savedProjects));
+      } catch (error) {
+        console.error('Error loading projects from localStorage:', error);
+      }
+    }
+  }, []);
 
   return (
     <div>

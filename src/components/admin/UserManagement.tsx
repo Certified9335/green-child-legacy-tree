@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
   Table, TableBody, TableCaption, TableCell, 
@@ -25,18 +25,42 @@ interface UserManagementProps {
 }
 
 const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
-  // Mock user data - would be fetched from API in a real app
-  const [users, setUsers] = useState<User[]>([
+  // Initial mock user data
+  const initialUsers: User[] = [
     { id: '1', name: 'John Doe', email: 'john@example.com', role: 'user', verified: true, joinedAt: new Date(2023, 1, 15) },
     { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'admin', verified: true, joinedAt: new Date(2023, 2, 20) },
     { id: '3', name: 'Michael Johnson', email: 'michael@example.com', role: 'user', verified: false, joinedAt: new Date(2023, 3, 5) },
     { id: '4', name: 'Sarah Williams', email: 'sarah@example.com', role: 'user', verified: true, joinedAt: new Date(2023, 4, 10) }
-  ]);
+  ];
   
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [filter, setFilter] = useState<'all' | 'verified' | 'unverified'>('all');
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
   const { toast } = useToast();
+
+  // Load saved users from localStorage on mount
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('admin_users');
+    if (savedUsers) {
+      try {
+        // Parse dates correctly
+        const parsedUsers = JSON.parse(savedUsers);
+        const usersWithDates = parsedUsers.map((user: any) => ({
+          ...user,
+          joinedAt: new Date(user.joinedAt)
+        }));
+        setUsers(usersWithDates);
+      } catch (error) {
+        console.error('Error loading users from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Save users to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('admin_users', JSON.stringify(users));
+  }, [users]);
 
   const filteredUsers = filter === 'all' 
     ? users 
@@ -100,7 +124,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ onAction }) => {
       joinedAt: new Date()
     };
     
-    setUsers(prev => [userToAdd, ...prev]);
+    const updatedUsers = [userToAdd, ...users];
+    setUsers(updatedUsers);
+    
+    // Reset form values
     setNewUser({ name: '', email: '', role: 'user' });
     setIsAddUserDialogOpen(false);
     onAction('Added new', 'user');
